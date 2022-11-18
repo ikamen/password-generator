@@ -88,43 +88,51 @@ var upperCasedCharacters = [
   'Z'
 ];
 
-var el = document.createElement('p');
-var passwordLength = "";
-var hasLowerCase = "";
-var hasUpperCase = "";
-var hasNumeric = "";
-var hasSpecial = "";
-
 // Function to prompt user for password options
 function getPasswordOptions() {
+
+  var passwordLength = "";
+  var hasLowerCase = "";
+  var hasUpperCase = "";
+  var hasNumeric = "";
+  var hasSpecial = "";
+  var isValidSelection = true;
+
   passwordLength = prompt("How many characters would you like your password to be?");
-  
-  //Check if pass length not a number OR empty string
+
+  //Check if pass length not a number OR empty string OR too short OR too long
   if (isNaN(passwordLength) || passwordLength.trim() === "") { 
-    alert("Your input is not a number and we can't proceed!");
-    return "";
-  }
   
-  hasLowerCase = confirm ("Confirm if the password should contain lowercase characters?");
-  hasUpperCase = confirm ("Confirm if the password should contain uppercase characters?");
-  hasNumeric = confirm ("Confirm if the password should contain numeric characters?");
-  hasSpecial = confirm ("Confirm if the password should contain special characters ($@%&*, etc)?");
+    alert("Your input is not a number and we can't proceed!");
+    isValidSelection = false;
+  
+  } else if (passwordLength < 10 || passwordLength > 64) {
+    
+    alert("Password length should be at least 10 characters and no more than 64");
+    isValidSelection = false;
 
-  //Check if at least one character type is selected
-  if (!hasLowerCase && !hasUpperCase && !hasNumeric && !hasSpecial) {
-    alert("Your selected not to include any specific character type and we can't proceed!");
-    return "";    
+  } else {
+  
+    hasLowerCase = confirm ("Click OK to confirm including lowercase characters");
+    hasUpperCase = confirm ("Click OK to confirm including uppercase characters");
+    hasNumeric = confirm ("Click OK to confirm including numeric characters");
+    hasSpecial = confirm ("Click OK to confirm including special characters ($@%&*, etc)");
+
+    //Check if at least one character type is selected
+    if (!hasLowerCase && !hasUpperCase && !hasNumeric && !hasSpecial) {
+      alert("Your selected not to include any specific character type and we can't proceed!");
+      isValidSelection = false;
+    }
   }
 
-  el.innerText = `You selected your password to:
-    be ${passwordLength} characters long
-    have lowercase characters: ${hasLowerCase}
-    have uppercase characters: ${hasUpperCase}
-    have numeric characters: ${hasNumeric}
-    have special characters: ${hasSpecial}
-    `;
-
-  document.body.append(el);
+  return {
+    isValidSelection: isValidSelection,
+    passwordLength: passwordLength,
+    hasLowerCase: hasLowerCase,
+    hasUpperCase: hasUpperCase,
+    hasNumeric: hasNumeric,
+    hasSpecial: hasSpecial
+  }
 }
 
 // Function for getting a random element from an array
@@ -136,29 +144,29 @@ function getRandom(arr) {
 // Function to generate password with user input
 function generatePassword() {
   var generatedPassword = "";
+  var userOptions = getPasswordOptions();
   
   //Check if user selections are valid before generating a password
-  if (getPasswordOptions() !== "") {
+  if (userOptions.isValidSelection === true) {
     //Build an array of characters based on the user selection or character types to be included in the password
     var charactersArray = [];
-    if (hasLowerCase) {
+    if (userOptions.hasLowerCase) {
       charactersArray = charactersArray.concat(lowerCasedCharacters);
     }
-    if (hasUpperCase) {
+    if (userOptions.hasUpperCase) {
       charactersArray = charactersArray.concat(upperCasedCharacters);
     }
-    if (hasNumeric) {
+    if (userOptions.hasNumeric) {
       charactersArray = charactersArray.concat(numericCharacters);
     }
-    if (hasSpecial) {
+    if (userOptions.hasSpecial) {
       charactersArray = charactersArray.concat(specialCharacters);
     }
 
-    for (var i = 0; i < passwordLength; i++) {
+    for (var i = 0; i < userOptions.passwordLength; i++) {
       generatedPassword += getRandom(charactersArray);
      }
   }
-
 
   return generatedPassword;
 
