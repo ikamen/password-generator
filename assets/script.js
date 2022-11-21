@@ -144,7 +144,7 @@ function getRandom(arr) {
 // Function to generate password with user input
 function generatePassword() {
   var generatedPassword = "";
-  var userOptions = getPasswordOptions();
+  var userOptions = getPasswordOptions(); //receive an object
   
   //Check if user selections are valid before generating a password
   if (userOptions.isValidSelection === true) {
